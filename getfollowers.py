@@ -75,3 +75,9 @@ def extract_ids():
     g.close()
 
     print len(d)
+
+
+def create_param():
+    f = open('user_ids.txt', 'r')
+    data = f.readline().split(', ')
+    return data
