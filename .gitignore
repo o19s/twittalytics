@@ -3,4 +3,5 @@ venv
 .idea
 data/*
 .*
-crendentials.py
+credentials.py
+*.txt

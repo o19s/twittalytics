@@ -1,3 +1,6 @@
+from django.utils.encoding import smart_str
+import json
+
 import pycassa
 
 from tweepy.streaming import StreamListener
@@ -17,27 +20,43 @@ def twitterAuth():
 
 
 # === Connect to Cassandra database ===
+# TODO: Set up Twittalytics Keyspace
 
-# conn = pycassa.ConnectionPool('Tweetielytics')  # Defaults to connecting to the server at 'localhost:9160'
-# cf = pycassa.ColumnFamily(conn, 'Tweet')   # get column family 'Tweets'
+# Defaults to connecting to the server at 'localhost:9160'
 
 # === Start streaming ===
-
 class TweetListener(StreamListener):
     def on_data(self, data):
-        # cass.insertToCass(cf, data)
+        print(data)
+        insertToCass(cf, data)
         return True
 
     def on_error(self, status):
         print status
 
 
+def insertToCass(cf, data):
+    if 'delete' not in data:    # Check if is new tweet
+        # Insert all tweet data into Cassandra
+        data = json.loads(data)
+        key = data['id_str']
+        for k, v in data.iteritems():
+            if v is not None:
+                cf.insert(key, {smart_str(k): smart_str(v)})    # using Django lib to decode Unicode
+
+
+
+
 if __name__ == '__main__':
+
+    conn = pycassa.ConnectionPool('Twittalytics')  
+    cf = pycassa.ColumnFamily(conn, 'Tweets')   # get column family 'Tweets'
+
     l = TweetListener()
     auth = twitterAuth()
 
     stream = Stream(auth, l)
-    # stream.filter(track=['basketball'])
+    #stream.filter(track=['basketball'])
 
     stream.sample()
 
@@ -45,13 +64,3 @@ if __name__ == '__main__':
 
 
     # stream.disconnect()
-
-    # api = tweepy.API(auth)
-
-    #     print api.me().name
-
-
-    # If the application settings are set for "Read and Write" then
-    # this line should tweet out the message to your account's
-    # timeline. The "Read and Write" setting is on https://dev.twitter.com/apps
-    # api.update_status('Updating using OAuth authentication via Tweepy!')
