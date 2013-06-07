@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+HOSTS = ["", ""]
+
 consumer_key = ""
 consumer_secret = ""
 
