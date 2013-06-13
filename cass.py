@@ -1,5 +1,3 @@
-__author__ = 'krystal'
-
 # import pycassa
 import json
 # from tweepy import Status, API

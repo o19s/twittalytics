@@ -7,8 +7,6 @@ from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
 
-import cass
-
 from credentials import *
 
 # === OAuth Authentication ===
